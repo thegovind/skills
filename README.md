@@ -1,47 +1,51 @@
-# Skills
+# 🧠 Skills
 
-Skills for AI coding agents — research, tooling, and personal productivity.
-
-Covers domains across mechanistic interpretability, alignment, econometrics, complexity theory, finance, formal verification, and the tools I use daily.
-
-## Install
+Teaching AI agents the things I care about.
 
 ```bash
 npx skills add thegovind/skills
 ```
 
-## Skill Catalog
+---
 
-| Area | Skill | Description |
-|------|-------|-------------|
-| **Tools** | [obsidian](.github/skills/obsidian/) | Obsidian CLI, Flavored Markdown, Bases databases, JSON Canvas |
+## Catalog
 
-### Planned Areas
+| | Skill | What it does |
+|---|-------|-------------|
+| 📓 | [obsidian](.github/skills/obsidian/) | CLI, Flavored Markdown, Bases databases, JSON Canvas |
 
-| Area | Topics |
-|------|--------|
-| **Mechanistic Interpretability** | Circuit analysis, feature visualization, sparse autoencoders, activation patching |
-| **Alignment** | RLHF, constitutional AI, scalable oversight, reward modeling |
-| **Ablation Studies** | Component ablation, causal tracing, knockout experiments |
-| **Econometrics** | Causal inference, IV estimation, panel data, diff-in-diff, synthetic control |
-| **Microeconomics** | Mechanism design, auction theory, contract theory, market design |
-| **Corporate Strategy** | Competitive dynamics, resource-based view, real options, disruption frameworks |
-| **Complexity Theory** | Computational complexity, emergent systems, agent-based modeling |
-| **Finance** | Derivatives pricing, portfolio theory, risk modeling, stochastic calculus |
-| **Lean** | Value stream mapping, continuous improvement, systems thinking |
-| **Formal Verification** | Model checking, theorem proving, type theory, property-based testing |
+## What's Coming
 
-## Structure
+I work at the intersection of a lot of fields. These are the skills I'm building next — each one distills a domain into something an AI agent can actually use.
+
+| | Area | Think... |
+|---|------|----------|
+| 🔬 | **Mechanistic Interpretability** | Circuit analysis, sparse autoencoders, activation patching, feature visualization |
+| 🎯 | **Alignment** | RLHF, constitutional AI, scalable oversight, reward modeling |
+| 🧪 | **Ablation Studies** | Causal tracing, component knockouts, intervention experiments |
+| 📊 | **Econometrics** | Causal inference, IV estimation, panel data, diff-in-diff, synthetic control |
+| ⚖️ | **Microeconomics** | Mechanism design, auction theory, contract theory, market design |
+| ♟️ | **Corporate Strategy** | Competitive dynamics, resource-based view, real options, disruption |
+| 🌀 | **Complexity Theory** | Computational complexity, emergent systems, agent-based modeling |
+| 💰 | **Finance** | Derivatives pricing, portfolio theory, risk modeling, stochastic calculus |
+| 📐 | **Lean (theorem prover)** | Lean 4, tactic proofs, mathlib, formalized mathematics |
+| ✅ | **Formal Verification** | Model checking, type theory, property-based testing, proof assistants |
+| 🏭 | **Operations & Optimization** | Linear/convex programming, scheduling, supply chain, constraint satisfaction |
+
+---
+
+<details>
+<summary>Skill structure</summary>
 
 ```
-.github/skills/<skill-name>/
-├── SKILL.md              # Main skill (YAML frontmatter + markdown body)
+.github/skills/<name>/
+├── SKILL.md              # YAML frontmatter + markdown body
 └── references/           # Detailed docs, split by topic
-    └── *.md
 
-tests/scenarios/<skill-name>/
-└── scenarios.yaml        # Test scenarios
+tests/scenarios/<name>/
+└── scenarios.yaml
 ```
+</details>
 
 ## License
 
