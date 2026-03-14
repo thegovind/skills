@@ -1,0 +1,236 @@
+config:
+  model: gpt-4
+  max_tokens: 2000
+  temperature: 0.3
+
+scenarios:
+  - name: cli_read_note
+    prompt: |
+      Read the contents of a note at "projects/roadmap.md" from my Obsidian vault using the CLI.
+    expected_patterns:
+      - "obsidian read"
+      - 'path="projects/roadmap.md"'
+    forbidden_patterns:
+      - "/Users/"
+      - "/home/"
+      - "cat "
+    tags:
+      - cli
+      - basic
+    mock_response: |
+      To read the note, run:
+      ```bash
+      obsidian read path="projects/roadmap.md"
+      ```
+      This prints the raw markdown content of the note to stdout. The path is vault-relative.
+
+  - name: cli_daily_append_task
+    prompt: |
+      Add a new task "Review PR #42" to my daily note in Obsidian.
+    expected_patterns:
+      - "daily:append"
+      - "content="
+      - "[ ]"
+    forbidden_patterns:
+      - "daily:prepend"
+      - "append path="
+    tags:
+      - cli
+      - daily
+    mock_response: |
+      ```bash
+      obsidian daily:append content="- [ ] Review PR #42"
+      ```
+      This appends the task to the end of today's daily note.
+
+  - name: cli_create_from_template
+    prompt: |
+      Create a new note called "Trip to Tokyo" using my "Travel" template in Obsidian.
+    expected_patterns:
+      - "obsidian create"
+      - 'template='
+      - "Travel"
+    forbidden_patterns:
+      - ".md"
+      - "template:insert"
+    tags:
+      - cli
+      - templates
+    mock_response: |
+      ```bash
+      obsidian create path="Trip to Tokyo" template="Travel"
+      ```
+      Note: `create` automatically appends `.md` — don't include the extension in the path.
+
+  - name: cli_search_json
+    prompt: |
+      Search my vault for notes about "architecture decisions" and return results as JSON.
+    expected_patterns:
+      - "obsidian search"
+      - "query="
+      - "format=json"
+    forbidden_patterns:
+      - "grep"
+      - "find "
+    tags:
+      - cli
+      - search
+    mock_response: |
+      ```bash
+      obsidian search query="architecture decisions" format=json
+      ```
+      This returns a JSON array of matching file paths: `["folder/note.md", ...]`
+
+  - name: markdown_wikilinks
+    prompt: |
+      Create a note about Project Alpha that links to related notes "Design Spec" and "Meeting Notes" using Obsidian syntax.
+    expected_patterns:
+      - "[["
+      - "]]"
+    forbidden_patterns:
+      - "](Design"
+      - ".md)"
+    tags:
+      - markdown
+      - wikilinks
+    mock_response: |
+      ```markdown
+      ---
+      title: Project Alpha
+      tags:
+        - project
+      ---
+
+      # Project Alpha
+
+      See the [[Design Spec]] for technical details.
+
+      Discussed in [[Meeting Notes#Decisions]].
+      ```
+
+  - name: markdown_callout
+    prompt: |
+      Add a warning callout to an Obsidian note about a deadline.
+    expected_patterns:
+      - "> [!warning]"
+    forbidden_patterns:
+      - "**Warning:**"
+      - "> Warning:"
+    tags:
+      - markdown
+      - callouts
+    mock_response: |
+      ```markdown
+      > [!warning] Deadline Approaching
+      > The submission deadline is ==Friday at 5 PM==. Ensure all reviews are complete.
+      ```
+
+  - name: bases_task_tracker
+    prompt: |
+      Create an Obsidian Base file (.base) that shows all notes tagged "task" in a table with name, status, and due date columns.
+    expected_patterns:
+      - "file.hasTag"
+      - "task"
+      - "type: table"
+      - "order:"
+      - "file.name"
+    forbidden_patterns:
+      - "dataview"
+      - "```dataview"
+    tags:
+      - bases
+      - basic
+    mock_response: |
+      ```yaml
+      filters:
+        and:
+          - file.hasTag("task")
+          - 'file.ext == "md"'
+
+      views:
+        - type: table
+          name: "Tasks"
+          order:
+            - file.name
+            - status
+            - due
+      ```
+
+  - name: bases_formula_duration
+    prompt: |
+      Create an Obsidian Base formula that calculates how many days until a due date property.
+    expected_patterns:
+      - "formulas:"
+      - "today()"
+      - ".days"
+      - "if("
+    forbidden_patterns:
+      - ".round(0)\"" 
+      - "/ 86400"
+    tags:
+      - bases
+      - formulas
+    mock_response: |
+      ```yaml
+      formulas:
+        days_until_due: 'if(due, (date(due) - today()).days, "")'
+      ```
+      Key points:
+      - Guard with `if()` since `due` may be empty
+      - Subtracting dates returns a Duration — access `.days` for the number
+      - Duration does NOT support `.round()` directly; use `.days.round(0)` if needed
+
+  - name: canvas_create_mindmap
+    prompt: |
+      Create a JSON Canvas mind map with a central "Project Plan" node connected to three subtopics.
+    expected_patterns:
+      - '"nodes"'
+      - '"edges"'
+      - '"type": "text"'
+      - '"fromNode"'
+      - '"toNode"'
+    forbidden_patterns:
+      - '"type": "canvas"'
+      - "mermaid"
+    tags:
+      - canvas
+      - basic
+    mock_response: |
+      ```json
+      {
+        "nodes": [
+          {"id": "a1b2c3d4e5f67890", "type": "text", "x": 0, "y": 0, "width": 300, "height": 150, "text": "# Project Plan"},
+          {"id": "b2c3d4e5f6789012", "type": "text", "x": 400, "y": -120, "width": 250, "height": 100, "text": "## Design"},
+          {"id": "c3d4e5f678901234", "type": "text", "x": 400, "y": 0, "width": 250, "height": 100, "text": "## Development"},
+          {"id": "d4e5f6789012345a", "type": "text", "x": 400, "y": 120, "width": 250, "height": 100, "text": "## Testing"}
+        ],
+        "edges": [
+          {"id": "e5f6789012345abc", "fromNode": "a1b2c3d4e5f67890", "fromSide": "right", "toNode": "b2c3d4e5f6789012", "toSide": "left"},
+          {"id": "f6789012345abcde", "fromNode": "a1b2c3d4e5f67890", "fromSide": "right", "toNode": "c3d4e5f678901234", "toSide": "left"},
+          {"id": "789012345abcdef0", "fromNode": "a1b2c3d4e5f67890", "fromSide": "right", "toNode": "d4e5f6789012345a", "toSide": "left"}
+        ]
+      }
+      ```
+
+  - name: cli_vault_relative_paths
+    prompt: |
+      How do I read a file at /Users/me/obsidian-vault/notes/readme.md using the Obsidian CLI?
+    expected_patterns:
+      - "vault-relative"
+      - "obsidian read"
+      - 'path="notes/readme.md"'
+    forbidden_patterns:
+      - "/Users/me/"
+      - "cat "
+      - "open "
+    tags:
+      - cli
+      - paths
+    mock_response: |
+      The Obsidian CLI uses **vault-relative paths**, not absolute filesystem paths:
+
+      ```bash
+      obsidian read path="notes/readme.md"
+      ```
+
+      All paths are relative to the vault root. Do not use absolute paths like `/Users/me/obsidian-vault/...`.
