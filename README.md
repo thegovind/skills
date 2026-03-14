@@ -1,10 +1,8 @@
 # Skills
 
-Personal productivity skills for AI coding agents — Obsidian, PKM, and automation workflows.
+Skills for AI coding agents — research, tooling, and personal productivity.
 
-## What Are Skills?
-
-Skills are domain-specific knowledge packages that teach AI coding agents how to work with specific tools and workflows. Each skill has a `SKILL.md` with YAML frontmatter (name + description) and a markdown body with instructions, patterns, and examples.
+Covers domains across mechanistic interpretability, alignment, econometrics, complexity theory, finance, formal verification, and the tools I use daily.
 
 ## Install
 
@@ -14,44 +12,36 @@ npx skills add thegovind/skills
 
 ## Skill Catalog
 
-> Skills live in `.github/skills/` — each directory contains a `SKILL.md` and optional `references/` folder.
+| Area | Skill | Description |
+|------|-------|-------------|
+| **Tools** | [obsidian](.github/skills/obsidian/) | Obsidian CLI, Flavored Markdown, Bases databases, JSON Canvas |
 
-| Skill | Description |
-|-------|-------------|
-| [obsidian](.github/skills/obsidian/) | Interact with Obsidian vaults — CLI operations, Obsidian Flavored Markdown, Bases databases, and JSON Canvas files. |
+### Planned Areas
+
+| Area | Topics |
+|------|--------|
+| **Mechanistic Interpretability** | Circuit analysis, feature visualization, sparse autoencoders, activation patching |
+| **Alignment** | RLHF, constitutional AI, scalable oversight, reward modeling |
+| **Ablation Studies** | Component ablation, causal tracing, knockout experiments |
+| **Econometrics** | Causal inference, IV estimation, panel data, diff-in-diff, synthetic control |
+| **Microeconomics** | Mechanism design, auction theory, contract theory, market design |
+| **Corporate Strategy** | Competitive dynamics, resource-based view, real options, disruption frameworks |
+| **Complexity Theory** | Computational complexity, emergent systems, agent-based modeling |
+| **Finance** | Derivatives pricing, portfolio theory, risk modeling, stochastic calculus |
+| **Lean** | Value stream mapping, continuous improvement, systems thinking |
+| **Formal Verification** | Model checking, theorem proving, type theory, property-based testing |
 
 ## Structure
 
 ```
-.github/
-└── skills/
-    └── <skill-name>/
-        ├── SKILL.md              # Main skill file (YAML frontmatter + markdown)
-        └── references/           # Optional detailed docs
-            ├── guide.md
-            └── acceptance-criteria.md
+.github/skills/<skill-name>/
+├── SKILL.md              # Main skill (YAML frontmatter + markdown body)
+└── references/           # Detailed docs, split by topic
+    └── *.md
 
-tests/
-└── scenarios/
-    └── <skill-name>/
-        └── scenarios.yaml        # Test scenarios
+tests/scenarios/<skill-name>/
+└── scenarios.yaml        # Test scenarios
 ```
-
-## Adding a New Skill
-
-1. Create `.github/skills/<skill-name>/SKILL.md` with frontmatter:
-   ```yaml
-   ---
-   name: skill-name
-   description: >
-     What the skill does and when to use it.
-     Triggers: "keyword1", "keyword2".
-   ---
-   ```
-2. Add instructions in the markdown body
-3. Split large content into `references/` files
-4. Add test scenarios in `tests/scenarios/<skill-name>/scenarios.yaml`
-5. Update this README's skill catalog
 
 ## License
 
