@@ -6,8 +6,6 @@ Teaching AI agents the things I care about.
 npx skills add thegovind/skills
 ```
 
----
-
 ## Installed
 
 | Skill | What it does |
@@ -16,21 +14,30 @@ npx skills add thegovind/skills
 
 ## Roadmap
 
-I work at the intersection of a lot of fields. Each skill distills a domain into something an agent can actually use.
+```mermaid
+graph LR
+    A[Skills] --> B[Tools]
+    A --> C[Research]
+    A --> D[Math]
 
-**Interpretability & Alignment** — circuit analysis, sparse autoencoders, activation patching, causal tracing, RLHF, scalable oversight, ablation studies
+    B --> B1[Obsidian]
+    B --> B2[PKM workflows]
 
-**Economics** — causal inference, IV estimation, panel data, diff-in-diff, mechanism design, auction theory, contract theory, market design
+    C --> C1[Interpretability]
+    C --> C2[Alignment]
+    C --> C3[Econometrics]
+    C --> C4[Microeconomics]
+    C --> C5[Corporate Strategy]
+    C --> C6[Finance]
 
-**Strategy & Operations** — competitive dynamics, real options, value streams, scheduling, supply chain, constraint satisfaction
+    D --> D1[Lean 4]
+    D --> D2[Formal Verification]
+    D --> D3[Optimization]
+    D --> D4[Complexity Theory]
+    D --> D5[Operations]
 
-**Math & Verification** — Lean 4, tactic proofs, mathlib, model checking, type theory, property-based testing
-
-**Complexity & Finance** — computational complexity, emergent systems, agent-based modeling, derivatives pricing, portfolio theory, stochastic calculus
-
-**Optimization** — linear programming, convex optimization, combinatorial optimization, integer programming
-
----
+    style B1 fill:#2d333b,stroke:#58a6ff,color:#e6edf3
+```
 
 <details>
 <summary>Skill structure</summary>
