@@ -1,0 +1,208 @@
+config:
+  model: gpt-4
+  max_tokens: 2200
+  temperature: 0.3
+
+scenarios:
+  - name: minimal_raw_text_to_ssml
+    prompt: |
+      Convert this into valid Azure Speech SSML: "Welcome to the launch. We start in 3 minutes."
+    expected_patterns:
+      - "<speak"
+      - 'version="1.0"'
+      - 'xml:lang='
+      - "<voice name="
+    forbidden_patterns:
+      - "<speech>"
+      - "voice name=en-"
+      - "volume=90"
+    tags:
+      - core
+      - minimal
+    mock_response: |
+      ```xml
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-AvaNeural">
+          <p>
+            <s>Welcome to the launch.</s>
+            <s>We start in <say-as interpret-as="cardinal">3</say-as> minutes.</s>
+          </p>
+        </voice>
+      </speak>
+      ```
+
+  - name: style_driven_assistant
+    prompt: |
+      Generate Azure SSML for a warm, friendly assistant saying "Hello! I'm ready when you are."
+    expected_patterns:
+      - "xmlns:mstts="
+      - "<mstts:express-as"
+      - 'style="'
+      - "<voice name="
+    forbidden_patterns:
+      - "<emotion>"
+      - "<speech>"
+    tags:
+      - style
+      - azure
+    mock_response: |
+      ```xml
+      <speak version="1.0"
+             xmlns="http://www.w3.org/2001/10/synthesis"
+             xmlns:mstts="https://www.w3.org/2001/mstts"
+             xml:lang="en-US">
+        <voice name="en-US-Ava:DragonHDOmniLatestNeural">
+          <mstts:express-as style="friendly">
+            Hello! I'm ready when you are.
+          </mstts:express-as>
+        </voice>
+      </speak>
+      ```
+      I used a style-capable Azure voice family so the `mstts:express-as` tag is valid.
+
+  - name: pronunciation_with_phoneme_and_alias
+    prompt: |
+      Write Azure SSML that makes "tomato" use an IPA pronunciation and "SQL" sound like "Sequel".
+    expected_patterns:
+      - "<phoneme"
+      - 'alphabet="ipa"'
+      - 'ph="'
+      - '<sub alias="'
+    forbidden_patterns:
+      - 'alphabet="IPA"'
+      - "<pronounce>"
+    tags:
+      - pronunciation
+      - phoneme
+    mock_response: |
+      ```xml
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-AvaNeural">
+          The recipe uses <phoneme alphabet="ipa" ph="tə.ˈmeɪ.toʊ">tomato</phoneme> paste.
+          Query the <sub alias="Sequel">SQL</sub> database after lunch.
+        </voice>
+      </speak>
+      ```
+
+  - name: multilingual_language_switch
+    prompt: |
+      Create Azure SSML for: "Welcome back. Gracias por acompanarnos." Use English first and then Spanish.
+    expected_patterns:
+      - "<lang"
+      - 'xml:lang="es-'
+      - "<voice name="
+    forbidden_patterns:
+      - "<translate>"
+      - "<language>"
+    tags:
+      - multilingual
+      - lang
+    mock_response: |
+      ```xml
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-AvaMultilingualNeural">
+          Welcome back.
+          <lang xml:lang="es-MX">Gracias por acompanarnos.</lang>
+        </voice>
+      </speak>
+      ```
+
+  - name: paced_explanation_with_breaks
+    prompt: |
+      Create Azure SSML that says "Let me explain the next step. Please wait for the confirmation message." but slower, with a half-second pause between the two sentences.
+    expected_patterns:
+      - "<prosody"
+      - 'rate='
+      - '<break time="500ms"'
+    forbidden_patterns:
+      - "<pause>"
+      - "<mstts:express-as"
+    tags:
+      - pacing
+      - prosody
+    mock_response: |
+      ```xml
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-AvaNeural">
+          <prosody rate="slow">Let me explain the next step.</prosody>
+          <break time="500ms" />
+          <prosody rate="-10%">Please wait for the confirmation message.</prosody>
+        </voice>
+      </speak>
+      ```
+
+  - name: repair_invalid_ssml
+    prompt: |
+      Fix this so Azure Speech accepts it: <speak><voice name=en-US-AvaNeural>Tom & Jerry</voice></speak>
+    expected_patterns:
+      - 'version="1.0"'
+      - 'xml:lang="en-US"'
+      - 'name="en-US-AvaNeural"'
+      - "&amp;"
+    forbidden_patterns:
+      - "name=en-US-AvaNeural"
+      - "Tom & Jerry"
+    tags:
+      - repair
+      - validation
+    mock_response: |
+      The original snippet is invalid because the voice name is unquoted, the root element is missing required attributes, and `&` must be escaped.
+      
+      ```xml
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-AvaNeural">Tom &amp; Jerry</voice>
+      </speak>
+      ```
+
+  - name: hd_omni_conflict_resolution
+    prompt: |
+      I need Dragon HD Omni SSML for this line, but also make it slower and add a half-second pause after the first sentence: "Welcome back. We begin now."
+    expected_patterns:
+      - "Dragon HD Omni"
+      - "does not support"
+      - "<prosody"
+      - "<break"
+    forbidden_patterns:
+      - "<emotion>"
+      - "just use both anyway"
+    tags:
+      - compatibility
+      - hd
+    mock_response: |
+      Dragon HD Omni does not support classic `<prosody>` or `<break>` tags, so the request needs a tradeoff.
+      
+      If you want explicit pacing control, switch to a standard neural voice:
+      
+      ```xml
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-AvaNeural">
+          <prosody rate="slow">Welcome back.</prosody>
+          <break time="500ms" />
+          <prosody rate="slow">We begin now.</prosody>
+        </voice>
+      </speak>
+      ```
+
+  - name: structured_say_as_content
+    prompt: |
+      Mark this up for Azure Speech SSML so the date, time, and phone number are read clearly: "Our launch is on 05/12/2026 at 3:45 PM. Call 8005550199."
+    expected_patterns:
+      - "<say-as"
+      - 'interpret-as="date"'
+      - 'interpret-as="time"'
+      - 'interpret-as="telephone"'
+    forbidden_patterns:
+      - "<number>"
+      - "<date>"
+    tags:
+      - say-as
+      - formatting
+    mock_response: |
+      ```xml
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-AvaNeural">
+          Our launch is on <say-as interpret-as="date" format="mdy">05/12/2026</say-as> at <say-as interpret-as="time">3:45 PM</say-as>.
+          Call <say-as interpret-as="telephone">8005550199</say-as>.
+        </voice>
+      </speak>
+      ```

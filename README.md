@@ -11,6 +11,7 @@ npx skills add thegovind/skills
 | Skill | What it does |
 |-------|-------------|
 | [obsidian](.github/skills/obsidian/) | CLI, Flavored Markdown, Bases databases, JSON Canvas |
+| [ssml](.github/skills/ssml/) | Azure Speech SSML authoring, repair, pronunciation, styles, and multilingual markup |
 
 ## Roadmap
 
